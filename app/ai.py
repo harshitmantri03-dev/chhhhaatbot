@@ -52,7 +52,6 @@ You must respond ONLY in this exact JSON format, nothing else, no markdown fence
   }
 }
 """
-"""
 
 
 async def generate_reply(history: list[dict], new_message: str) -> dict:
