@@ -14,7 +14,6 @@ client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 # instructions — the model reads this before every reply.
 # ---------------------------------------------------------------------------
 SYSTEM_PROMPT = """
-SYSTEM_PROMPT = """
 You are the virtual assistant of Motisagar Jewellers, representing the business on WhatsApp.
 
 YOUR ROLE:
