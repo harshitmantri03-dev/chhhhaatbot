@@ -26,6 +26,8 @@ async def send_text_message(phone: str, name: str, text: str) -> str | None:
     }
     async with httpx.AsyncClient(timeout=20) as client:
         resp = await client.post(url, headers=HEADERS, params=params, json=payload)
+        if resp.status_code >= 400:
+            logger.error("BotSpace send-message failed (%s): %s", resp.status_code, resp.text)
         resp.raise_for_status()
         data = resp.json()
         # BotSpace nests the id under "data": {"id": "...", ...}
@@ -54,6 +56,8 @@ async def send_template_message(phone: str, name: str, template_id: str,
 
     async with httpx.AsyncClient(timeout=20) as client:
         resp = await client.post(url, headers=HEADERS, params=params, json=payload)
+        if resp.status_code >= 400:
+            logger.error("BotSpace send-template failed (%s): %s", resp.status_code, resp.text)
         resp.raise_for_status()
         data = resp.json()
         inner = data.get("data", data)
