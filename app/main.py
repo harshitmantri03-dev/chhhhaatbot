@@ -34,7 +34,8 @@ async def webhook(request: Request):
     body = await request.json()
     direction = body.get("direction")
     phone_obj = body.get("phone", {})
-    phone = f"{phone_obj.get('countryCode', '')}{phone_obj.get('phone', '')}"
+    # BotSpace's send-message endpoint expects phone numbers with a leading "+"
+phone = f"+{phone_obj.get('countryCode', '')}{phone_obj.get('phone', '')}"
     customer = body.get("customer", {})
     customer_name = customer.get("name", "")
     message_id = body.get("id")
