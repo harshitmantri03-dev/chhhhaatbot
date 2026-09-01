@@ -17,7 +17,7 @@ async def send_text_message(phone: str, name: str, text: str) -> str | None:
     Returns the BotSpace message id if available (used to mark this
     message as 'sent by bot' so the outgoing webhook can recognize it).
     """
-    url = f"{BOTSPACE_BASE_URL}/{BOTSPACE_CHANNEL_ID}/message/send-message"
+    url = f"{BOTSPACE_BASE_URL}/{BOTSPACE_CHANNEL_ID}/message/send-session-message"
     params = {"apiKey": BOTSPACE_API_KEY}
     payload = {
         "name": name or "Customer",
