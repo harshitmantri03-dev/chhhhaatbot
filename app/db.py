@@ -32,9 +32,16 @@ def init_db():
             CREATE TABLE IF NOT EXISTS sent_by_bot (
                 message_id TEXT PRIMARY KEY,
                 phone TEXT,
+                text TEXT,
                 created_at REAL
             )
         """)
+        # Migration: older deployments may have this table without the "text" column.
+        try:
+            conn.execute("ALTER TABLE sent_by_bot ADD COLUMN text TEXT")
+            conn.commit()
+        except sqlite3.OperationalError:
+            pass  # column already exists
         conn.execute("""
             CREATE TABLE IF NOT EXISTS customer_info (
                 phone TEXT PRIMARY KEY,
@@ -111,11 +118,11 @@ def get_history(phone: str, limit: int = 20):
 
 # ---------- Bot-sent message tracking (this is the core of the handover logic) ----------
 
-def record_bot_sent(message_id: str, phone: str):
+def record_bot_sent(message_id: str, phone: str, text: str = ""):
     with get_conn() as conn:
         conn.execute(
-            "INSERT OR REPLACE INTO sent_by_bot (message_id, phone, created_at) VALUES (?, ?, ?)",
-            (message_id, phone, time.time()),
+            "INSERT OR REPLACE INTO sent_by_bot (message_id, phone, text, created_at) VALUES (?, ?, ?, ?)",
+            (message_id or f"noid-{time.time()}", phone, text, time.time()),
         )
         conn.commit()
 
@@ -124,6 +131,23 @@ def was_sent_by_bot(message_id: str) -> bool:
     with get_conn() as conn:
         row = conn.execute(
             "SELECT 1 FROM sent_by_bot WHERE message_id = ?", (message_id,)
+        ).fetchone()
+        return row is not None
+
+
+def was_recently_sent_by_bot(phone: str, text: str, window_seconds: float = 45) -> bool:
+    """
+    More robust than ID matching: BotSpace's send-response id and the id that
+    later appears in the outgoing webhook don't always match. Instead, check
+    whether the bot sent this exact text to this exact number within the last
+    `window_seconds` — if so, this outgoing webhook is just an echo of our own
+    message, not a human agent reply.
+    """
+    cutoff = time.time() - window_seconds
+    with get_conn() as conn:
+        row = conn.execute(
+            "SELECT 1 FROM sent_by_bot WHERE phone = ? AND text = ? AND created_at >= ?",
+            (phone, text, cutoff),
         ).fetchone()
         return row is not None
 
