@@ -5,10 +5,12 @@ from zoneinfo import ZoneInfo
 from openai import AsyncOpenAI
 
 from app.config import OPENAI_API_KEY, OPENAI_MODEL
-STORE_TIMEZONE = "Asia/Kolkata"
 
 logger = logging.getLogger("ai")
 client = AsyncOpenAI(api_key=OPENAI_API_KEY)
+
+# Store's local timezone — change if the store is in a different timezone.
+STORE_TIMEZONE = "Asia/Kolkata"
 
 # ---------------------------------------------------------------------------
 # EDIT THIS: this is where you "teach" the bot about the jewellery business.
@@ -62,13 +64,14 @@ async def generate_reply(history: list[dict], new_message: str) -> dict:
     Calls OpenAI with the conversation history + new customer message.
     Returns {"reply": str, "extracted": {...}}
     """
-    messages = now = datetime.now(ZoneInfo(STORE_TIMEZONE))
-current_time_note = (
-    f"\n\nCURRENT DATE & TIME (store local time): "
-    f"{now.strftime('%A, %d %B %Y, %I:%M %p')}. "
-    f"Use this if the customer asks about today's date, day, or time-related questions."
-)
-messages = [{"role": "system", "content": SYSTEM_PROMPT + current_time_note}]
+    now = datetime.now(ZoneInfo(STORE_TIMEZONE))
+    current_time_note = (
+        f"\n\nCURRENT DATE & TIME (store local time): "
+        f"{now.strftime('%A, %d %B %Y, %I:%M %p')}. "
+        f"Use this if the customer asks about today's date, day, or time-related questions."
+    )
+
+    messages = [{"role": "system", "content": SYSTEM_PROMPT + current_time_note}]
     messages.extend(history)
     messages.append({"role": "user", "content": new_message})
 
