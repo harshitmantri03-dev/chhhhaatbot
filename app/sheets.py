@@ -58,8 +58,10 @@ def upsert_row(phone: str, name: str = None, interest: str = None,
                 now,
             ]
             sheet.update(f"A{row_idx}:F{row_idx}", [new_row])
-        else:
+       else:
             sheet.append_row([phone, name or "", interest or "", budget or "", notes or "", now])
+
+        logger.info("Google Sheet updated successfully for %s", phone)
 
     except Exception:
         logger.exception("Failed to update Google Sheet for %s", phone)
