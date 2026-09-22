@@ -97,7 +97,12 @@ async def handle_incoming(phone: str, customer_name: str, body: dict):
     result = await ai.generate_reply(history, text)
     reply_text = result["reply"]
     extracted = result.get("extracted", {})
-
+    
+    # Log every customer immediately, even before the AI extracts anything —
+    # this guarantees no lead is ever missed, even from a one-word message.
+    db.upsert_customer_info(phone, name=customer_name)
+    sheets.upsert_row(phone, name=customer_name)
+    
     # Send reply via BotSpace
     sent_id = await botspace.send_text_message(phone, customer_name, reply_text)
     db.record_bot_sent(sent_id, phone, reply_text)
