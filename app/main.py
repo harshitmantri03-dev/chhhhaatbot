@@ -110,9 +110,11 @@ async def handle_incoming(phone: str, customer_name: str, body: dict):
     budget = extracted.get("budget")
     notes = extracted.get("notes")
     if any([name, interest, budget, notes]):
+        logger.info("Extracted info for %s: name=%s interest=%s budget=%s notes=%s", phone, name, interest, budget, notes)
         db.upsert_customer_info(phone, name=name, interest=interest, budget=budget, notes=notes)
         sheets.upsert_row(phone, name=name or customer_name, interest=interest, budget=budget, notes=notes)
-
+    else:
+        logger.info("No extractable info found in message from %s", phone)
 
 async def handle_outgoing(phone: str, message_id: str, body: dict):
     payload = body.get("payload", {}).get("payload", {})
