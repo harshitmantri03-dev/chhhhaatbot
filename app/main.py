@@ -6,6 +6,7 @@ from fastapi import FastAPI, Request, HTTPException
 
 from app.config import WEBHOOK_SECRET, AUTO_RESUME_HOURS, GOOGLE_SERVICE_ACCOUNT_FILE
 from app import db, botspace, ai, sheets
+from app.product_images import PRODUCT_IMAGES
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("main")
