@@ -5,7 +5,7 @@
 
 PRODUCT_IMAGES = {
     "antique_silver_jewelry": [
-        "https://drive.google.com/uc?export=view&id=1YqsHrqCbVGABCbfrG19ji4Pmeax8CHQl/",
+        "https://botspace-uploads.s3.eu-west-1.amazonaws.com/6a7d9659715d2fa28d23f4aa/links/57c44bd2-4dd8-46de-b3e7-f44fee18d2fa.jpg",
         "https://drive.google.com/uc?export=view&id=1KPMKFGayiMUog4zYlsmt-SLYfDl5iObR/",
         "https://drive.google.com/uc?export=view&id=1EgD8Ir-iYC4C9ee__1lxLqeH97HWzd99/",
         "https://drive.google.com/uc?export=view&id=1UWQerSB_3SPA2lo1i7C8a8aEkvKDAEiZ/",
