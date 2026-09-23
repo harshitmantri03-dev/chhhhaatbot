@@ -211,4 +211,5 @@ async def generate_reply(history: list[dict], new_message: str) -> dict:
 
     parsed.setdefault("reply", "Sorry, could you say that again?")
     parsed.setdefault("extracted", {})
+    parsed.setdefault("image_category", None)
     return parsed
