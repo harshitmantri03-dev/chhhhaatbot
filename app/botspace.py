@@ -10,7 +10,6 @@ HEADERS = {
     "accept": "application/json",
 }
 
-
 async def send_text_message(phone: str, name: str, text: str) -> str | None:
     """
     Sends a plain text WhatsApp message via BotSpace.
