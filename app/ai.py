@@ -162,16 +162,18 @@ EXTRACTION RULE:
 Only extract information explicitly mentioned by the customer in their current message.
 If a detail is not mentioned in the current message, return null for that field.
 
-You must respond ONLY in this exact JSON format, nothing else, no markdown fences:
+If the customer asks to see a photo of jewellery, set "image_category" to the closest matching category from this list: gold_necklace, diamond_ring, silver_bangle. If none match or no image was requested, set it to null.
 
+You must respond ONLY in this exact JSON format, nothing else, no markdown fences:
 {
-"reply": "the message text to send the customer",
-"extracted": {
-"name": "customer's name if mentioned this turn, else null",
-"interest": "jewellery type/interest if mentioned this turn, else null",
-"budget": "budget if mentioned this turn, else null",
-"notes": "any other useful detail if mentioned this turn, else null"
-}
+  "reply": "the message text to send the customer",
+  "image_category": "matching category name or null",
+  "extracted": {
+    "name": "customer's name if mentioned this turn, else null",
+    "interest": "jewellery type/interest if mentioned this turn, else null",
+    "budget": "budget if mentioned this turn, else null",
+    "notes": "any other useful detail if mentioned this turn, else null"
+  }
 }
 """
 
