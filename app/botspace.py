@@ -10,6 +10,7 @@ HEADERS = {
     "accept": "application/json",
 }
 
+
 async def send_text_message(phone: str, name: str, text: str) -> str | None:
     """
     Sends a plain text WhatsApp message via BotSpace.
@@ -29,7 +30,6 @@ async def send_text_message(phone: str, name: str, text: str) -> str | None:
             logger.error("BotSpace send-message failed (%s): %s", resp.status_code, resp.text)
         resp.raise_for_status()
         data = resp.json()
-        # BotSpace nests the id under "data": {"id": "...", ...}
         inner = data.get("data", data)
         message_id = inner.get("id") or inner.get("messageId") or inner.get("_id")
         logger.info("Sent message to %s, id=%s", phone, message_id)
@@ -58,8 +58,13 @@ async def send_template_message(phone: str, name: str, template_id: str,
         if resp.status_code >= 400:
             logger.error("BotSpace send-template failed (%s): %s", resp.status_code, resp.text)
         resp.raise_for_status()
+        data = resp.json()
+        inner = data.get("data", data)
+        message_id = inner.get("id") or inner.get("messageId") or inner.get("_id")
+        return message_id
 
-    async def send_image_message(phone: str, name: str, media_url: str, caption: str = "") -> str | None:
+
+async def send_image_message(phone: str, name: str, media_url: str, caption: str = "") -> str | None:
     """Sends an image via BotSpace, with an optional caption (the 'label' field)."""
     url = f"{BOTSPACE_BASE_URL}/{BOTSPACE_CHANNEL_ID}/message/send-session-media-message"
     params = {"apiKey": BOTSPACE_API_KEY}
@@ -79,8 +84,4 @@ async def send_template_message(phone: str, name: str, template_id: str,
         inner = data.get("data", data)
         message_id = inner.get("id") or inner.get("messageId") or inner.get("_id")
         logger.info("Sent image to %s, id=%s", phone, message_id)
-        return message_id
-        data = resp.json()
-        inner = data.get("data", data)
-        message_id = inner.get("id") or inner.get("messageId") or inner.get("_id")
         return message_id
