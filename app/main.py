@@ -104,9 +104,20 @@ async def handle_incoming(phone: str, customer_name: str, body: dict):
     db.upsert_customer_info(phone, name=customer_name)
     sheets.upsert_row(phone, name=customer_name)
     
-    # Send reply via BotSpace
-    sent_id = await botspace.send_text_message(phone, customer_name, reply_text)
-    db.record_bot_sent(sent_id, phone, reply_text)
+   # Send reply via BotSpace — as image(s) with caption if requested, else plain text
+    image_category = result.get("image_category")
+    image_urls = PRODUCT_IMAGES.get(image_category, []) if image_category else []
+
+    if image_urls:
+        sent_id = None
+        for i, url in enumerate(image_urls):
+            # Caption only goes on the first image, so it doesn't repeat awkwardly
+            caption = reply_text if i == 0 else ""
+            sent_id = await botspace.send_image_message(phone, customer_name, url, caption=caption)
+            db.record_bot_sent(sent_id, phone, caption or f"[image {i+1}]")
+    else:
+        sent_id = await botspace.send_text_message(phone, customer_name, reply_text)
+        db.record_bot_sent(sent_id, phone, reply_text)
 
     db.add_message(phone, "assistant", reply_text)
 
